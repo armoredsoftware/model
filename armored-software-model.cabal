@@ -1,0 +1,25 @@
+Name:                armored-software-model
+Version:             0.0.1
+Synopsis:            Model of Armored Software Architeture
+Category:            Network, System
+License:             BSD3
+License-file:        LICENSE
+Author:              Andy Gill
+Maintainer:          andygill@ku.edu
+Copyright:           (c) 2014 The University of Kansas
+Homepage:            http://www.ittc.ku.edu/csdl/fpg/software/armored.html
+Stability:           beta
+build-type:          Simple
+Cabal-Version:       >= 1.10
+
+Executable Model
+  Main-is:          Main.hs
+  Ghc-options:      -threaded
+  Build-Depends:
+       base         >= 4.6 && < 5
+  default-language: Haskell2010
+  Ghc-Options: -Wall
+
+source-repository head
+  type:             git
+  location:         git://github.com/armoredsoftware/model.git
