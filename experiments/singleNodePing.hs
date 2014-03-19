@@ -1,11 +1,12 @@
 {-# LANGUAGE TemplateHaskell, DeriveDataTypeable, DeriveGeneric #-}
 import Data.Binary
 import Data.Typeable
-import Data.Generics
+import GHC.Generics
 import Text.Printf
 import Control.Distributed.Process
 import Control.Distributed.Process.Node
-import Control.Distributed.Process.Internal.Closure.TH
+import Control.Distributed.Process.Closure
+import DistribUtils
 
 
 data Message = Ping ProcessId | Pong ProcessId deriving (Typeable, Generic)
@@ -13,13 +14,17 @@ data Message = Ping ProcessId | Pong ProcessId deriving (Typeable, Generic)
 instance Binary Message
 
 
+
+
+
 pingServer :: Process ()
 pingServer = do
   Ping from <- expect                              
   say $ printf "ping received from %s" (show from) 
   mypid <- getSelfPid                              
-  send from (Pong mypid)                            
-
+  send from (Pong mypid)
+                            
+remotable['pingServer]
 
 master :: Process ()
 master = do
@@ -36,3 +41,7 @@ master = do
   say "pong."
 
   terminate               
+
+
+main :: IO ()
+main = distribMain (\_ -> master) Main.__remoteTable
