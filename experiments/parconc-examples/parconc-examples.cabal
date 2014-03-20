@@ -1,0 +1,276 @@
+name:                parconc-examples
+version:             0.3.2
+synopsis:            Examples to accompany the book "Parallel and Concurrent Programming in Haskell"
+-- description:         
+license:             BSD3
+license-file:        LICENSE
+author:              Simon Marlow
+maintainer:          Simon Marlow <marlowsd@gmail.com>
+copyright:           (c) Simon Marlow 2011-2013
+category:            Sample Code
+build-type:          Simple
+cabal-version:       >=1.10
+
+extra-source-files:  sudoku17.1000.txt
+                     sudoku17.16000.txt
+                     sudoku17.49151.txt
+                     chanbench.hs
+                     findpar5.hs
+                     parlist.hs
+                     other/correcter.hs
+                     other/arithgame.hs
+                     other/game.hs
+                     other/README
+                     distrib-db/WorkerSample.hs
+                     distrib-db/DatabaseSample.hs
+                     sudoku-par1.hs
+                     sudoku-par2.hs
+                     sudoku-par3.hs
+                     sudoku-par4.hs
+                     kmeans/Makefile
+                     timeout2.hs
+                     parinfer/benchmark.in
+
+-- -----------------------------------------------------------------------------
+-- Flags
+
+-- -f llvm: enable -fllvm to GHC; requires LLVM to be installed, but
+-- makes the Repa programs faster
+
+flag llvm
+  default: False
+
+-- -f devil: Enable the image-maniputation programs, which are
+-- disabled by default because they require the devil library which
+-- needs to be installed separately.
+
+flag devil
+  default: False
+
+-- -f cuda: Build the examples that require accelerate-cuda.  These
+-- need the NVidia CUDA tools installed.
+
+flag cuda
+  default: False
+
+
+-- -----------------------------------------------------------------------------
+-- conc-distrib
+
+executable ping
+  main-is: distrib-ping/ping.hs
+  other-modules: DistribUtils
+  build-depends:   base >= 4.5 && < 4.7
+                 , network >= 2.3 && < 2.5
+                 , binary >=0.6.3 && < 0.7
+                 , distributed-process >= 0.4.2 && < 0.5
+                 , distributed-process-simplelocalnet ==0.2.*
+                 , distributed-static ==0.2.*
+                 , template-haskell >= 2.7 && < 2.9
+  if impl(ghc <= 7.6)
+      -- prior to ghc-7.4 generics lived in ghc-prim
+      build-depends: ghc-prim
+  default-language: Haskell2010
+
+executable ping-multi
+  main-is: distrib-ping/ping-multi.hs
+  other-modules: DistribUtils
+  build-depends:   base >= 4.5 && < 4.7
+                 , network >= 2.3 && < 2.5
+                 , binary >=0.6.3 && < 0.7
+                 , distributed-process >= 0.4.2 && < 0.5
+                 , distributed-process-simplelocalnet ==0.2.*
+                 , distributed-static ==0.2.*
+                 , template-haskell >= 2.7 && < 2.9
+  if impl(ghc <= 7.6)
+      -- prior to ghc-7.4 generics lived in ghc-prim
+      build-depends: ghc-prim
+  default-language: Haskell2010
+
+executable ping-tc
+  main-is: distrib-ping/ping-tc.hs
+  other-modules: DistribUtils
+  build-depends:   base >= 4.5 && < 4.7
+                 , network >= 2.3 && < 2.5
+                 , binary >=0.6.3 && < 0.7
+                 , distributed-process >= 0.4.2 && < 0.5
+                 , distributed-process-simplelocalnet ==0.2.*
+                 , distributed-static ==0.2.*
+                 , template-haskell >= 2.7 && < 2.9
+  if impl(ghc <= 7.6)
+      -- prior to ghc-7.4 generics lived in ghc-prim
+      build-depends: ghc-prim
+  default-language: Haskell2010
+
+executable ping-tc-merge
+  main-is: distrib-ping/ping-tc-merge.hs
+  other-modules: DistribUtils
+  build-depends:   base >= 4.5 && < 4.7
+                 , network >= 2.3 && < 2.5
+                 , binary >=0.6.3 && < 0.7
+                 , distributed-process >= 0.4.2 && < 0.5
+                 , distributed-process-simplelocalnet ==0.2.*
+                 , distributed-static ==0.2.*
+                 , template-haskell >= 2.7 && < 2.9
+  if impl(ghc <= 7.6)
+      -- prior to ghc-7.4 generics lived in ghc-prim
+      build-depends: ghc-prim
+  default-language: Haskell2010
+
+-- extra, not in the text?
+executable ping-tc-notify
+  main-is: distrib-ping/ping-tc-notify.hs
+  other-modules: DistribUtils
+  build-depends:   base >= 4.5 && < 4.7
+                 , network >= 2.3 && < 2.5
+                 , binary >=0.6.3 && < 0.7
+                 , distributed-process >= 0.4.2 && < 0.5
+                 , distributed-process-simplelocalnet ==0.2.*
+                 , distributed-static ==0.2.*
+                 , template-haskell >= 2.7 && < 2.9
+  if impl(ghc <= 7.6)
+      -- prior to ghc-7.4 generics lived in ghc-prim
+      build-depends: ghc-prim
+  default-language: Haskell2010
+
+executable ping-fail
+  main-is: distrib-ping/ping-fail.hs
+  build-depends:   base >= 4.5 && < 4.7
+                 , network >= 2.3 && < 2.5
+                 , binary >=0.6.3 && < 0.7
+                 , distributed-process >= 0.4.2 && < 0.5
+                 , distributed-process-simplelocalnet ==0.2.*
+                 , distributed-static ==0.2.*
+                 , template-haskell >= 2.7 && < 2.9
+  if impl(ghc <= 7.6)
+      -- prior to ghc-7.4 generics lived in ghc-prim
+      build-depends: ghc-prim
+  default-language: Haskell2010
+
+executable distrib-chat
+  main-is: distrib-chat/chat.hs
+  other-modules: ConcurrentUtils DistribUtils
+  build-depends:   base >= 4.5 && < 4.7
+                 , containers >= 0.4 && < 0.6
+                 , stm ==2.4.*
+                 , async ==2.0.*
+                 , network >= 2.3 && < 2.5
+                 , binary >=0.6.3 && < 0.7
+                 , distributed-process >= 0.4.2 && < 0.5
+                 , distributed-process-simplelocalnet ==0.2.*
+                 , distributed-static ==0.2.*
+                 , transformers ==0.3.*
+                 , template-haskell >= 2.7 && < 2.9
+  if impl(ghc <= 7.6)
+      -- prior to ghc-7.4 generics lived in ghc-prim
+      build-depends: ghc-prim
+  default-language: Haskell2010
+
+executable distrib-chat-noslave
+  main-is: distrib-chat/chat-noslave.hs
+  other-modules: ConcurrentUtils
+  build-depends:   base >= 4.5 && < 4.7
+                 , containers >= 0.4 && < 0.6
+                 , stm ==2.4.*
+                 , async ==2.0.*
+                 , network >= 2.3 && < 2.5
+                 , binary >=0.6.3 && < 0.7
+                 , distributed-process >= 0.4.2 && < 0.5
+                 , distributed-process-simplelocalnet ==0.2.*
+                 , distributed-static ==0.2.*
+                 , transformers ==0.3.*
+                 , template-haskell >= 2.7 && < 2.9
+  if impl(ghc <= 7.6)
+      -- prior to ghc-7.4 generics lived in ghc-prim
+      build-depends: ghc-prim
+  default-language: Haskell2010
+
+executable distrib-db
+  main-is: db.hs
+  hs-source-dirs: . distrib-db
+  other-modules: DistribUtils Database
+  build-depends:   base >= 4.5 && < 4.7
+                 , containers >= 0.4 && < 0.6
+                 , stm ==2.4.*
+                 , async ==2.0.*
+                 , network >= 2.3 && < 2.5
+                 , binary >=0.6.3 && < 0.7
+                 , distributed-process >= 0.4.2 && < 0.5
+                 , distributed-process-simplelocalnet ==0.2.*
+                 , distributed-static ==0.2.*
+                 , transformers ==0.3.*
+                 , template-haskell >= 2.7 && < 2.9
+  if impl(ghc <= 7.6)
+      -- prior to ghc-7.4 generics lived in ghc-prim
+      build-depends: ghc-prim
+  default-language: Haskell2010
+
+-- -----------------------------------------------------------------------------
+-- conc-debugging-tuning
+
+executable  mvar4
+  main-is: mvar4.hs
+  build-depends:   base >= 4.5 && < 4.7
+  default-language: Haskell2010
+
+executable  deadlock1
+  main-is: deadlock1.hs
+  build-depends:   base >= 4.5 && < 4.7
+  default-language: Haskell2010
+
+executable  deadlock2
+  main-is: deadlock2.hs
+  build-depends:   base >= 4.5 && < 4.7
+  default-language: Haskell2010
+
+executable  threadperf1
+  main-is: threadperf1.hs
+  build-depends:   base >= 4.5 && < 4.7
+  default-language: Haskell2010
+
+executable  threadperf2
+  main-is: threadperf2.hs
+  build-depends:   base >= 4.5 && < 4.7
+  ghc-options: -rtsopts
+  default-language: Haskell2010
+
+-- -----------------------------------------------------------------------------
+-- Extras (exercises etc.)
+
+executable  bingtranslator
+  main-is: bingtranslator.hs
+  other-modules: BingTranslate GetURL
+  hs-source-dirs: other .
+  build-depends:   base >= 4.5 && < 4.7
+                 , bytestring >= 0.9 && < 0.11
+                 , time ==1.4.*
+                 , HTTP ==4000.2.*
+                 , network >= 2.3 && < 2.5
+                 , utf8-string ==0.3.*
+                 , xml ==1.3.*
+  default-language: Haskell2010
+
+executable  bingtranslatorconc
+  main-is: bingtranslatorconc.hs
+  other-modules: BingTranslate GetURL
+  hs-source-dirs: other .
+  build-depends:   base >= 4.5 && < 4.7
+                 , bytestring >= 0.9 && < 0.11
+                 , time ==1.4.*
+                 , HTTP ==4000.2.*
+                 , network >= 2.3 && < 2.5
+                 , utf8-string ==0.3.*
+                 , xml ==1.3.*
+  default-language: Haskell2010
+
+executable  geturlsstm
+  main-is: geturlsstm.hs
+  other-modules: TimeIt GetURL
+  build-depends:   base >= 4.5 && < 4.7
+                 , stm ==2.4.*
+                 , bytestring >= 0.9 && < 0.11
+                 , time ==1.4.*
+                 , network >= 2.3 && < 2.5
+                 , HTTP ==4000.2.*
+  default-language: Haskell2010
+
